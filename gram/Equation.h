@@ -26,9 +26,19 @@ public:
 
     void setRule(const std::list<std::pair<RegExpression, NotTerminal*>> &rule);
 
-public:
     std::string toString();
+
     void fromString(std::string equation);
+
+    RegExpression* findRegExp (NotTerminal notTerminal);
+
+    RegExpression* findFreeTerm();
+
+    bool haveNotTerm (NotTerminal notTerminal);
+
+    void resolve();
+
+    void change(Equation eq);
 };
 
 

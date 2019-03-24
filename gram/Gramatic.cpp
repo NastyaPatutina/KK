@@ -61,3 +61,15 @@ NotTerminal* Gramatic::getNotTerminal(std::string notTermName) {
     }
     return NULL;
 }
+
+RegExpression Gramatic::solve() {
+    std::list<Equation>::iterator i;
+    for(i = rules.begin(); i != rules.end(); ++i) {
+        (*i).resolve();
+        std::list<Equation>::iterator j;
+        for (j = std::next(i); j  != rules.end(); ++j) {
+            (*j).change(*i);
+        }
+    }
+    return RegExpression();
+}

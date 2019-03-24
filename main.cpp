@@ -64,5 +64,8 @@ int main() {
     gm->setRules(grammRules);
     NotTerminal* notTerm = gm->getNotTerminal(j["start"]);
     gm->setStartSymbol(*notTerm);
+
+    gm->solve();
+
     return 0;
 }

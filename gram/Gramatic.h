@@ -14,6 +14,10 @@
 class Gramatic {
 private:
     std::list <Terminal> terminals;
+    std::list <NotTerminal> notTerminals;
+    std::list <Equation> rules;
+    NotTerminal startSymbol;
+
 public:
     const std::list<Terminal> &getTerminals() const;
 
@@ -35,12 +39,7 @@ public:
 
     NotTerminal* getNotTerminal(std::string termName);
 
-private:
-    std::list <NotTerminal> notTerminals;
-    std::list <Equation> rules;
-    NotTerminal startSymbol;
-public:
-
+    RegExpression solve();
 };
 
 
