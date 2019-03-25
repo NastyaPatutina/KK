@@ -119,3 +119,34 @@ RegExpression *Equation::findFreeTerm() {
     return NULL;
 }
 
+void Equation::changeTermToRegExp(Equation eq) {
+    std::list<std::pair<RegExpression, NotTerminal*>, std::allocator<std::pair<RegExpression, NotTerminal*>>>::iterator i;
+    for(i = rule.begin(); i != rule.end(); ++i) {
+        if ((*i).second != NULL && (*i).second->getName() == eq.getResNotTerm().getName()) {
+            (*i).first.pushBack(*(eq.findFreeTerm()));
+            (*i).second = NULL;
+        }
+    }
+
+    //Merge Free Terms
+    std::list<RegExpression> newList;
+    std::list<std::pair<RegExpression, NotTerminal*>> newRules;
+    for(i = rule.begin(); i != rule.end(); ++i) {
+        if ((*i).second == NULL) {
+            if (newList.empty()) {
+                newList.push_back((*i).first);
+            } else {
+                RegExpression rx = (*(std::prev(newList.end())));
+                newList.remove(rx);
+                newList.push_back(*rx.addOrRegExpression((*i).first));
+            }
+        } else {
+            newRules.push_back(*i);
+        }
+    }
+
+    newRules.emplace_back(*(std::prev(newList.end())), nullptr);
+
+    this->rule = newRules;
+}
+

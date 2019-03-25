@@ -39,6 +39,8 @@ public:
     void resolve();
 
     void change(Equation eq);
+
+    void changeTermToRegExp(Equation eq);
 };
 
 

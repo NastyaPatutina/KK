@@ -31,6 +31,33 @@ public:
                     quantifier == item.quantifier &&
                     otherRegExpression == item.otherRegExpression ;
         }
+
+        std::string toString() {
+            std::string res = "";
+
+            if (isOr) {
+                res += "((" + regExpression->toString() + ")|(" + otherRegExpression->toString() + "))";
+            }
+
+            if (regExpression != NULL)
+                res += regExpression->toString();
+
+            if (body.getName() != "")
+                res += body.getName();
+
+            if (quantifier == Quantifier::MoreNull) {
+                res = "(" + res + ")";
+                res += "*";
+            }
+
+            if (quantifier == Quantifier::MoreOne) {
+                res = "(" + res + ")";
+                res += "+";
+            }
+
+
+            return res;
+        }
     };
     RegExpression();
 

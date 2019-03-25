@@ -36,7 +36,12 @@ void RegExpression::addSymbol(Terminal terminal) {
 }
 
 std::string RegExpression::toString() {
-    return "";
+    std::string res = "";
+    std::list<Item>::iterator i;
+    for (i = this->regExpBody.begin(); i != this->regExpBody.end(); ++i) {
+        res += (*i).toString();
+    }
+    return res;
 }
 
 RegExpression::RegExpression() {}

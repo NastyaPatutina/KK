@@ -40,6 +40,8 @@ public:
     NotTerminal* getNotTerminal(std::string termName);
 
     RegExpression solve();
+
+    Equation findEquationForNotTerm (const NotTerminal &startSymbol);
 };
 
 

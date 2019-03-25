@@ -65,7 +65,9 @@ int main() {
     NotTerminal* notTerm = gm->getNotTerminal(j["start"]);
     gm->setStartSymbol(*notTerm);
 
-    gm->solve();
+    RegExpression result = gm->solve();
+
+    std::cout << result.toString();
 
     return 0;
 }
