@@ -68,3 +68,7 @@ RegExpression *RegExpression::addOrRegExpression(RegExpression regExpression) {
     newRegExpression->regExpBody.push_back(item);
     return newRegExpression;
 }
+
+std::list<RegExpression::Item> RegExpression::getRegExpBody() {
+    return this->regExpBody;
+}

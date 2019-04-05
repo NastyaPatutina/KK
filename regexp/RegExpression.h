@@ -60,7 +60,6 @@ public:
         }
     };
     RegExpression();
-
     RegExpression(Terminal terminal);
     void addSymbol(Terminal terminal);
     void addSymbol(Terminal terminal, Quantifier quantifier);
@@ -70,6 +69,7 @@ public:
     void pushBack(RegExpression regExpression);
     void pushFront(RegExpression regExpression);
     bool operator==(const RegExpression regExpression) const;
+    std::list<RegExpression::Item> getRegExpBody();
 
 private:
     std::list<Item> regExpBody;

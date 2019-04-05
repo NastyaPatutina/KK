@@ -11,6 +11,7 @@
 #include "gram/NotTerminal.h"
 #include "gram/Equation.h"
 #include "gram/Gramatic.h"
+#include "FA/DFA.h"
 
 using json = nlohmann::json;
 
@@ -55,8 +56,8 @@ int main() {
                     }
                 }
             }
-                NotTerminal* notTerm = gm->getNotTerminal(currentRule);
-                rules.emplace_back(*regExp, notTerm);
+            NotTerminal* notTerm = gm->getNotTerminal(currentRule);
+            rules.emplace_back(*regExp, notTerm);
         }
         eq->setRule(rules);
         grammRules.push_back(*eq);
@@ -66,8 +67,17 @@ int main() {
     gm->setStartSymbol(*notTerm);
 
     RegExpression result = gm->solve();
-
     std::cout << result.toString();
+
+    NFA required_nfa;
+    required_nfa = required_nfa.re_to_nfa(result);
+    required_nfa.display();
+
+    std::cout<<"\n\n==> DFA : \n\n";
+
+    DFA required_dfa;
+    required_dfa = required_dfa.nfa_to_dfa(required_nfa);
+    required_dfa.display();
 
     return 0;
 }
