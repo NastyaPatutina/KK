@@ -33,13 +33,13 @@ int main() {
     }
     gm->setNotTerminals(notterms);
     gm->setTerminals(terms);
-    std::list<Equation> grammRules;
+    std::list<Equation*> grammRules;
     for(json::iterator it = j["rules"].begin(); it != j["rules"].end(); ++it) {
         Equation* eq = new Equation();
         NotTerminal* term = new NotTerminal();
         term->setName((*it).at("res"));
         eq->setResNotTerm(*term);
-        std::list<std::pair<RegExpression, NotTerminal*>> rules;
+        std::list<std::pair<RegExpression*, NotTerminal*>> rules;
         json subj = *it;
         for(json::iterator itRule = subj["rules"].begin(); itRule != subj["rules"].end(); ++itRule) {
             std::string currentRule = (*itRule);
@@ -57,17 +57,17 @@ int main() {
                 }
             }
             NotTerminal* notTerm = gm->getNotTerminal(currentRule);
-            rules.emplace_back(*regExp, notTerm);
+            rules.emplace_back(regExp, notTerm);
         }
         eq->setRule(rules);
-        grammRules.push_back(*eq);
+        grammRules.push_back(eq);
     }
     gm->setRules(grammRules);
     NotTerminal* notTerm = gm->getNotTerminal(j["start"]);
     gm->setStartSymbol(*notTerm);
 
     RegExpression result = gm->solve();
-    std::cout << result.toString();
+    std::cout << result.toString() << std::endl;
 
     NFA required_nfa;
     required_nfa = required_nfa.re_to_nfa(result);

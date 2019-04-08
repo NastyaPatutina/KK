@@ -1,0 +1,16 @@
+{
+	"notTerminal":["X", "Y"],
+	"terminal":["0", "1"],
+	"rules":
+	[
+		{
+			"res": "X",
+			"rules":["1Y", "1X", "1"]
+		},
+		{
+			"res": "Y",
+			"rules":["0X", "1Y"]
+		}
+	],
+	"start": "Y"
+}

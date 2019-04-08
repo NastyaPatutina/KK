@@ -7,9 +7,9 @@
 
 std::string Equation::toString() {
     std::string ruleStr;
-    std::list<std::pair<RegExpression, NotTerminal*>, std::allocator<std::pair<RegExpression, NotTerminal*>>>::iterator i;
+    std::list<std::pair<RegExpression*, NotTerminal*>, std::allocator<std::pair<RegExpression*, NotTerminal*>>>::iterator i;
     for(i = rule.begin(); i != rule.end(); ++i) {
-            ruleStr += (*i).first.toString() + (*i).second->getName();
+            ruleStr += (*i).first->toString() + (*i).second->getName();
     }
     return resNotTerm.getName() + " -> " + ruleStr;
 }
@@ -28,19 +28,19 @@ void Equation::setResNotTerm(const NotTerminal &resNotTerm) {
     Equation::resNotTerm = resNotTerm;
 }
 
-const std::list<std::pair<RegExpression, NotTerminal*>> &Equation::getRule() const {
+const std::list<std::pair<RegExpression*, NotTerminal*>> &Equation::getRule() const {
     return rule;
 }
 
-void Equation::setRule(const std::list<std::pair<RegExpression, NotTerminal*>> &rule) {
+void Equation::setRule(const std::list<std::pair<RegExpression*, NotTerminal*>> &rule) {
     Equation::rule = rule;
 }
 
 RegExpression* Equation::findRegExp(NotTerminal notTerminal) {
-    std::list<std::pair<RegExpression, NotTerminal*>, std::allocator<std::pair<RegExpression, NotTerminal*>>>::iterator i;
+    std::list<std::pair<RegExpression*, NotTerminal*>, std::allocator<std::pair<RegExpression*, NotTerminal*>>>::iterator i;
     for(i = rule.begin(); i != rule.end(); ++i) {
         if ((*i).second != NULL && (*i).second->getName() == notTerminal.getName()) {
-            return &(*i).first;
+            return (*i).first;
         }
     }
     return NULL;
@@ -52,43 +52,47 @@ void Equation::resolve() {
         return;
     }
     RegExpression* changedRegExpression = new RegExpression(*(regExpression->addQuantifier(RegExpression::Quantifier::MoreNull)));
-    std::list<std::pair<RegExpression, NotTerminal *>, std::allocator<std::pair<RegExpression, NotTerminal *>>>::iterator i;
-    std::pair<RegExpression, NotTerminal *> current;
+    std::list<std::pair<RegExpression*, NotTerminal *>, std::allocator<std::pair<RegExpression*, NotTerminal *>>>::iterator i;
+    std::pair<RegExpression*, NotTerminal *> current;
     for (i = rule.begin(); i != rule.end(); ++i) {
-        if ((*i).second == NULL || (*i).second->getName() != this->getResNotTerm().getName()) {
-            (*i).first.pushFront(*changedRegExpression);
-        } else {
-            current = *i;
+        (*i).first->pushFront(*changedRegExpression);
+        if ((*i).second != NULL && (*i).second->getName() == this->getResNotTerm().getName()) {
+            (*i).first = changedRegExpression;
+            (*i).second = NULL;
+            current = (*i);
         }
     }
-    this->rule.remove(current);
+    if (rule.size() > 1) {
+        this->rule.remove(current);
+    }
+    mergeEmptyRegExp();
 }
 
-void Equation::change(Equation eq) {
-    if (haveNotTerm(eq.getResNotTerm())) {
-        RegExpression *centralK = findRegExp(eq.getResNotTerm());
+void Equation::change(Equation* eq) {
+    if (haveNotTerm(eq->getResNotTerm())) {
+        RegExpression *centralK = findRegExp(eq->getResNotTerm());
 
-        std::list<std::pair<RegExpression, NotTerminal *>, std::allocator<std::pair<RegExpression, NotTerminal *>>>::iterator i;
-        std::pair<RegExpression, NotTerminal *> current;
+        std::list<std::pair<RegExpression*, NotTerminal *>, std::allocator<std::pair<RegExpression*, NotTerminal *>>>::iterator i;
+        std::pair<RegExpression*, NotTerminal *> current;
         for (i = rule.begin(); i != rule.end(); ++i) {
-            if ((*i).second == NULL || (*i).second->getName() != eq.getResNotTerm().getName()) {
+            if ((*i).second == NULL || (*i).second->getName() != eq->getResNotTerm().getName()) {
                 if ((*i).second == NULL) {
-                    RegExpression *regExpressionFirst = eq.findFreeTerm();
+                    RegExpression *regExpressionFirst = eq->findFreeTerm();
                     if (regExpressionFirst != NULL) {
                         if (centralK != NULL) {
                             regExpressionFirst->pushFront(*centralK);
                         }
                         RegExpression *regExpressionOld = this->findFreeTerm();
-                        (*i).first = *(regExpressionFirst->addOrRegExpression(*regExpressionOld));
+                        (*i).first = regExpressionFirst->addOrRegExpression(regExpressionOld);
                     }
                 } else {
-                    RegExpression *regExpressionFirst = eq.findRegExp(*(*i).second);
+                    RegExpression *regExpressionFirst = eq->findRegExp(*(*i).second);
                     if (regExpressionFirst != NULL) {
                         if (centralK != NULL) {
                             regExpressionFirst->pushFront(*centralK);
                         }
                         RegExpression *regExpressionOld = this->findRegExp(*(*i).second);
-                        (*i).first = *(regExpressionFirst->addOrRegExpression(*regExpressionOld));
+                        (*i).first = regExpressionFirst->addOrRegExpression(regExpressionOld);
                     }
                 }
             } else {
@@ -100,7 +104,7 @@ void Equation::change(Equation eq) {
 }
 
 bool Equation::haveNotTerm(NotTerminal notTerminal) {
-    std::list<std::pair<RegExpression, NotTerminal*>, std::allocator<std::pair<RegExpression, NotTerminal*>>>::iterator i;
+    std::list<std::pair<RegExpression*, NotTerminal*>, std::allocator<std::pair<RegExpression*, NotTerminal*>>>::iterator i;
     for(i = rule.begin(); i != rule.end(); ++i) {
         if ((*i).second->getName() == notTerminal.getName()) {
             return true;
@@ -109,44 +113,47 @@ bool Equation::haveNotTerm(NotTerminal notTerminal) {
     return false;
 }
 
-RegExpression *Equation::findFreeTerm() {
-    std::list<std::pair<RegExpression, NotTerminal*>, std::allocator<std::pair<RegExpression, NotTerminal*>>>::iterator i;
+RegExpression* Equation::findFreeTerm() {
+    std::list<std::pair<RegExpression*, NotTerminal*>, std::allocator<std::pair<RegExpression*, NotTerminal*>>>::iterator i;
     for(i = rule.begin(); i != rule.end(); ++i) {
         if ((*i).second == NULL) {
-            return &(*i).first;
+            return (*i).first;
         }
     }
     return NULL;
 }
 
-void Equation::changeTermToRegExp(Equation eq) {
-    std::list<std::pair<RegExpression, NotTerminal*>, std::allocator<std::pair<RegExpression, NotTerminal*>>>::iterator i;
-    for(i = rule.begin(); i != rule.end(); ++i) {
-        if ((*i).second != NULL && (*i).second->getName() == eq.getResNotTerm().getName()) {
-            (*i).first.pushBack(*(eq.findFreeTerm()));
-            (*i).second = NULL;
-        }
-    }
-
-    //Merge Free Terms
-    std::list<RegExpression> newList;
-    std::list<std::pair<RegExpression, NotTerminal*>> newRules;
+void Equation::mergeEmptyRegExp() {
+    std::list<std::pair<RegExpression*, NotTerminal*>> newRules;
+    std::list<RegExpression*> newList;
+    std::list<std::pair<RegExpression*, NotTerminal*>, std::allocator<std::pair<RegExpression*, NotTerminal*>>>::iterator i;
     for(i = rule.begin(); i != rule.end(); ++i) {
         if ((*i).second == NULL) {
-            if (newList.empty()) {
-                newList.push_back((*i).first);
-            } else {
-                RegExpression rx = (*(std::prev(newList.end())));
+            RegExpression* rx = (*(std::prev(newList.end())));
+            if (rx != NULL && (*i).first != NULL) {
                 newList.remove(rx);
-                newList.push_back(*rx.addOrRegExpression((*i).first));
+                newList.push_back(rx->addOrRegExpression((*i).first));
+            } else {
+                newList.push_back((*i).first);
             }
         } else {
             newRules.push_back(*i);
         }
     }
-
-    newRules.emplace_back(*(std::prev(newList.end())), nullptr);
-
+    newRules.emplace_back(newList.front(), nullptr);
     this->rule = newRules;
+}
+
+void Equation::changeTermToRegExp(Equation* eq) {
+    std::list<std::pair<RegExpression*, NotTerminal*>, std::allocator<std::pair<RegExpression*, NotTerminal*>>>::iterator i;
+    for(i = rule.begin(); i != rule.end(); ++i) {
+        if ((*i).second != NULL && (*i).second->getName() == eq->getResNotTerm().getName()) {
+            (*i).first->pushBack(*(eq->findFreeTerm()));
+            (*i).second = NULL;
+        }
+    }
+
+    //Merge Free Terms
+    mergeEmptyRegExp();
 }
 

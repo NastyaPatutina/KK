@@ -16,15 +16,15 @@
 class Equation {
 private:
     NotTerminal resNotTerm;
-    std::list<std::pair<RegExpression, NotTerminal*>> rule;
+    std::list<std::pair<RegExpression*, NotTerminal*>> rule;
 public:
     const NotTerminal &getResNotTerm() const;
 
     void setResNotTerm(const NotTerminal &resNotTerm);
 
-    const std::list<std::pair<RegExpression, NotTerminal*>> &getRule() const;
+    const std::list<std::pair<RegExpression*, NotTerminal*>> &getRule() const;
 
-    void setRule(const std::list<std::pair<RegExpression, NotTerminal*>> &rule);
+    void setRule(const std::list<std::pair<RegExpression*, NotTerminal*>> &rule);
 
     std::string toString();
 
@@ -38,9 +38,11 @@ public:
 
     void resolve();
 
-    void change(Equation eq);
+    void change(Equation* eq);
 
-    void changeTermToRegExp(Equation eq);
+    void changeTermToRegExp(Equation* eq);
+
+    void mergeEmptyRegExp();
 };
 
 

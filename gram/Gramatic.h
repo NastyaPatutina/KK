@@ -15,7 +15,7 @@ class Gramatic {
 private:
     std::list <Terminal> terminals;
     std::list <NotTerminal> notTerminals;
-    std::list <Equation> rules;
+    std::list <Equation*> rules;
     NotTerminal startSymbol;
 
 public:
@@ -27,9 +27,9 @@ public:
 
     void setNotTerminals(const std::list<NotTerminal> &notTerminals);
 
-    const std::list<Equation> &getRules() const;
+    const std::list<Equation*> &getRules() const;
 
-    void setRules(const std::list<Equation> &rules);
+    void setRules(const std::list<Equation*> &rules);
 
     const NotTerminal &getStartSymbol() const;
 

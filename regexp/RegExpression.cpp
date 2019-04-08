@@ -58,11 +58,11 @@ bool RegExpression::operator==(const RegExpression regExpression) const {
     return this->regExpBody == regExpression.regExpBody;
 }
 
-RegExpression *RegExpression::addOrRegExpression(RegExpression regExpression) {
+RegExpression *RegExpression::addOrRegExpression(RegExpression* regExpression) {
     RegExpression* newRegExpression = new RegExpression();
     Item item;
     item.regExpression = new RegExpression(*this);
-    item.otherRegExpression = new RegExpression(regExpression);
+    item.otherRegExpression = new RegExpression(*regExpression);
     item.isOr = true;
     item.quantifier = Quantifier::Non;
     newRegExpression->regExpBody.push_back(item);

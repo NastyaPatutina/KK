@@ -36,7 +36,7 @@ public:
             std::string res = "";
 
             if (isOr) {
-                res += "((" + regExpression->toString() + ")|(" + otherRegExpression->toString() + "))";
+                return "((" + regExpression->toString() + ")|(" + otherRegExpression->toString() + "))";
             }
 
             if (regExpression != NULL)
@@ -65,7 +65,7 @@ public:
     void addSymbol(Terminal terminal, Quantifier quantifier);
     std::string toString();
     RegExpression* addQuantifier(RegExpression::Quantifier quantifier);
-    RegExpression* addOrRegExpression(RegExpression regExpression);
+    RegExpression* addOrRegExpression(RegExpression* regExpression);
     void pushBack(RegExpression regExpression);
     void pushFront(RegExpression regExpression);
     bool operator==(const RegExpression regExpression) const;

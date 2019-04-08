@@ -20,11 +20,11 @@ void Gramatic::setNotTerminals(const std::list<NotTerminal> &notTerminals) {
     Gramatic::notTerminals = notTerminals;
 }
 
-const std::list<Equation> &Gramatic::getRules() const {
+const std::list<Equation*> &Gramatic::getRules() const {
     return rules;
 }
 
-void Gramatic::setRules(const std::list<Equation> &rules) {
+void Gramatic::setRules(const std::list<Equation*> &rules) {
     Gramatic::rules = rules;
 }
 
@@ -63,31 +63,31 @@ NotTerminal* Gramatic::getNotTerminal(std::string notTermName) {
 }
 
 RegExpression Gramatic::solve() {
-    std::list<Equation>::iterator i;
+    std::list<Equation*>::iterator i;
     for(i = rules.begin(); i != rules.end(); ++i) {
-        (*i).resolve();
-        std::list<Equation>::iterator j;
+        (*i)->resolve();
+        std::list<Equation*>::iterator j;
         for (j = std::next(i); j  != rules.end(); ++j) {
-            (*j).change(*i);
+            (*j)->change(*i);
         }
     }
 
-    std::list<Equation>::reverse_iterator it;
+    std::list<Equation*>::reverse_iterator it;
     for(it = std::next(rules.rbegin()); it != rules.rend(); ++it) {
-        std::list<Equation>::reverse_iterator j;
+        std::list<Equation*>::reverse_iterator j;
         for (j = std::prev(it); j  != std::prev(rules.rbegin()); --j) {
-            if ((*j).findFreeTerm() != NULL)
-                (*it).changeTermToRegExp(*j);
+            if ((*j)->findFreeTerm() != NULL)
+                (*it)->changeTermToRegExp(*j);
         }
     }
     return *(findEquationForNotTerm(this->getStartSymbol()).findFreeTerm());
 }
 
 Equation Gramatic::findEquationForNotTerm(const NotTerminal &startSymbol) {
-    std::list<Equation>::iterator i;
+    std::list<Equation*>::iterator i;
     for(i = rules.begin(); i != rules.end(); ++i) {
-        if ((*i).getResNotTerm().getName() == startSymbol.getName())
-            return (*i);
+        if ((*i)->getResNotTerm().getName() == startSymbol.getName())
+            return *(*i);
     }
 
     return Equation();
