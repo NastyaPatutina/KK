@@ -72,29 +72,30 @@ void testing(std::list<std::string> list){
         std::ifstream infile("../" + *i + ".json");
         json j = json::parse(infile);
         Gramatic *gm = fill_gramm(j);
+        std::cout << "\n\n=> TEST: "<< *i;
 
         std::cout << "\n\n==> RegExpression: \n\n";
 
         RegExpression result = gm->solve();
         std::cout << result.toString() << std::endl;
 
-        std::cout << "\n\n==> NFA: \n\n";
-
         NFA required_nfa;
         required_nfa = required_nfa.re_to_nfa(result);
-        required_nfa.display();
         required_nfa.write_to_file("../NFA" + *i +".dot");
-
-        std::cout << "\n\n==> DFA: \n\n";
 
         DFA required_dfa;
         required_dfa = required_dfa.nfa_to_dfa(required_nfa);
-        required_dfa.display();
+
         required_dfa.write_to_file("../DFA" + *i +".dot");
         std::string comm = "dot -Tpdf ../DFA" + *i +".dot -o ../DFA" + *i +".pdf";
         system(comm.c_str());
+        comm = "../DFA" + *i +".dot";
+        remove(comm.c_str());
+
         comm = "dot -Tpdf ../NFA" + *i +".dot -o ../NFA" + *i +".pdf";
         system(comm.c_str());
+        comm = "../NFA" + *i +".dot";
+        remove(comm.c_str());
     }
 }
 int main(int argc, char *argv[]) {
@@ -130,6 +131,14 @@ int main(int argc, char *argv[]) {
     required_dfa = required_dfa.nfa_to_dfa(required_nfa);
     required_dfa.display();
     required_dfa.write_to_file("../DFA.dot");
+    std::string comm = "dot -Tpdf ../DFA.dot -o ../DFA.pdf";
+    system(comm.c_str());
+    comm = "../DFA.dot";
+    remove(comm.c_str());
+    comm = "dot -Tpdf ../NFA.dot -o ../NFA.pdf";
+    system(comm.c_str());
+    comm = "../NFA.dot";
+    remove(comm.c_str());
 
     return 0;
 }

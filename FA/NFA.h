@@ -20,9 +20,7 @@ public:
     std::vector <trans> transitions;
     int final_state;
 
-    NFA() {
-
-    }
+    NFA() {}
 
     int get_vertex_count() {
         return vertex.size();
@@ -75,9 +73,6 @@ public:
         stream.close();
     }
 
-    /**
-     * Get the set of reachable state from each specified vertex.
-     */
     std::vector<Terminal> find_possible_input_symbols(const std::vector<int> &vertexs) {
         std::vector<Terminal> result;
 
@@ -150,16 +145,6 @@ public:
         return result;
     }
 
-    std::string join(std::vector<int> v, std::string delim) {
-        std::stringstream ss;
-        for(int i = 0; i < v.size(); ++i) {
-            if(i != 0)
-                ss << ",";
-            ss << v[i];
-        }
-        return ss.str();
-    }
-
     NFA concat(NFA a, NFA b);
 
     NFA kleene(NFA a);
@@ -169,7 +154,6 @@ public:
     NFA re_to_nfa(RegExpression::Item regExpression);
 
     NFA re_to_nfa(RegExpression rg);
-
 };
 
 #endif //LAB1_NKA_H

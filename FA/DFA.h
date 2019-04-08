@@ -19,18 +19,12 @@ public:
     std::vector<bool> marked;
     std::vector<int> final_states;
 
-    /**
-     * Add newly_created entry into DFA
-     */
     int add_entry(std::vector<int> entry) {
         entries.push_back(entry);
         marked.push_back(false);
         return entries.size() - 1;
     }
 
-    /**
-     * Return the array position of the next unmarked entry
-     */
     int next_unmarked_entry_idx() {
         for (int i = 0; i < marked.size(); i++) {
             if (!marked.at(i)) {
@@ -41,9 +35,6 @@ public:
         return -1;
     }
 
-    /**
-     * mark the entry specified by index as marked (marked = true)
-     */
     void mark_entry(int idx) {
         marked.at(idx) = true;
     }
@@ -85,10 +76,6 @@ public:
             ss << v[i];
         }
         return ss.str();
-    }
-
-    std::string get_final_state() {
-        return join(final_states, ",");
     }
 
     void set_transition(int vertex_from, int vertex_to, Terminal trans_symbol) {
