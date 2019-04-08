@@ -10,6 +10,7 @@
 #include <string>
 #include <stack>
 #include <sstream>
+#include <fstream>
 #include "trans.h"
 #include "../regexp/RegExpression.h"
 
@@ -54,10 +55,24 @@ public:
         std::cout << "\n";
         for (int i = 0; i < transitions.size(); i++) {
             new_trans = transitions.at(i);
-            std::cout << "q" << new_trans.vertex_from << " -> q" << new_trans.vertex_to << " : Symbol - "
-                 << new_trans.trans_symbol.getName() << std::endl;
+            std::cout << "q" << new_trans.vertex_from << " -> q" << new_trans.vertex_to << " [label="
+                 << new_trans.trans_symbol.getName() << "]" << std::endl;
         }
         std::cout << "\nThe final state is q" << get_final_state() << std::endl;
+    }
+
+    void write_to_file(std::string name="NFA.txt") {
+        std::ofstream stream;
+        stream.open (name);
+        trans new_trans;
+        stream << "digraph G {";
+        for (int i = 0; i < transitions.size(); i++) {
+            new_trans = transitions.at(i);
+            stream << "<q" << new_trans.vertex_from << "> -> <q" << new_trans.vertex_to << "> [label=<"
+                      << new_trans.trans_symbol.getName() << ">]" << std::endl;
+        }
+        stream << "}";
+        stream.close();
     }
 
     /**
@@ -89,7 +104,7 @@ public:
 
         sort(result.begin(), result.end());
         std::unique(result.begin(), result.end());
-        std::cout << "eclosure{" << join(X, ",") << "}  ->  " << join(result, ",") << std::endl;
+//        std::cout << "eclosure{" << join(X, ",") << "}  ->  " << join(result, ",") << std::endl;
         return result;
     }
 

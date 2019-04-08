@@ -105,11 +105,26 @@ public:
         std::cout << "\n";
         for (int i = 0; i < transitions.size(); i++) {
             new_trans = transitions.at(i);
-            std::cout << "q" << new_trans.vertex_from << " {" << join(entries.at(new_trans.vertex_from), ",")
-                      << "} -> q" << new_trans.vertex_to << " {" << join(entries.at(new_trans.vertex_to), ",")
-                      << "} : Symbol - " << new_trans.trans_symbol.getName() << std::endl;
+            std::cout << "q" << new_trans.vertex_from << " " << join(entries.at(new_trans.vertex_from), ",")
+                      << ") -> q" << new_trans.vertex_to << " (" << join(entries.at(new_trans.vertex_to), ",")
+                      << ") [label=" << new_trans.trans_symbol.getName() << "]" <<std::endl;
         }
         std::cout << "\nThe final state is q : " << join(final_states, ",") << std::endl;
+    }
+
+    void write_to_file(std::string name="DFA.txt") {
+        std::ofstream stream;
+        stream.open (name);
+        trans new_trans;
+        stream << "digraph G {";
+        for (int i = 0; i < transitions.size(); i++) {
+            new_trans = transitions.at(i);
+            stream << "<q" << new_trans.vertex_from << " (" << join(entries.at(new_trans.vertex_from), ",")
+                      << ")> -> <q" << new_trans.vertex_to << " (" << join(entries.at(new_trans.vertex_to), ",")
+                      << ")> [label=<" << new_trans.trans_symbol.getName() << ">]" <<std::endl;
+        }
+        stream << "}";
+        stream.close();
     }
 
     DFA nfa_to_dfa(NFA nfa);
